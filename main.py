@@ -445,7 +445,7 @@ def cluster(df):
 
   # gambar kedua
 
-  fig2=plt.figure(figsize=(15, 15))
+  fig2=plt.figure(figsize=(8, 5))
   plt.subplot(1, 1, 1)
 
   plt.title('Sample')
@@ -457,6 +457,38 @@ def cluster(df):
 
   plt.savefig('foo2.png')
   st.pyplot(fig2)
+
+  fig3=plt.figure(figsize=(8,5))
+  plt.subplot(1, 1, 1)
+  plt.title('K-Means')
+  for j in range(k):
+    dfi = df[df.kelompokCluster == j]
+    plt.scatter(dfi.x, dfi['y'], color=colors[j])
+
+  plt.xlabel('x')
+  plt.ylabel('y')
+
+  plt.scatter(0, 0, marker='^', color='black', s=500)
+  plt.grid()
+
+  plt.savefig('foo3.png')
+  st.pyplot(fig3)
+
+  fig4=plt.figure(figsize=(8,5))
+  plt.subplot(1, 1, 1)
+  plt.title('Modified 1')
+  for j in range(k):
+    dfi = df[df.kelompokClusterMod == j]
+    plt.scatter(dfi.x, dfi['y'], color=colors[j])
+
+  plt.xlabel('x')
+  plt.ylabel('y')
+
+  plt.scatter(0, 0, marker='^', color='black', s=500)
+  plt.grid()
+
+  plt.savefig('foo4.png')
+  st.pyplot(fig4)
   
   # st.set_figure_dims(width=15, height=7)
   # st.pyplot(fig1)
