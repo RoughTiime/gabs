@@ -402,11 +402,11 @@ def cluster(df):
               j] if i == 0 else df[df.kelompokClusterMod == j]
       plt.scatter(dfi.x, dfi['y'], color=colors[j])
 
-  plt.xlabel('x')
-  plt.ylabel('y')
+    plt.xlabel('x')
+    plt.ylabel('y')
 
-  plt.scatter(0, 0, marker='^', color='black', s=500)
-  plt.grid()
+    plt.scatter(0, 0, marker='^', color='black', s=500)
+    plt.grid()
 
   plt.subplot(3, 2, 4)
   plt.title('Modified 2')
