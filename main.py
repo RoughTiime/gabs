@@ -31,6 +31,7 @@ import streamlit.components.v1 as components
 import base64
 from io import BytesIO
 import time
+from fpdf import FPDF
 
 st.markdown("""
         <style>
@@ -42,7 +43,6 @@ st.markdown("""
                 }
         </style>
         """, unsafe_allow_html=True)
-_lock = RendererAgg.lock
 
 def is_valid_number(value):
     try:
@@ -239,6 +239,7 @@ def cluster(df):
   eta = 4
   N = 5
   o = 0.1
+  # o = 3.9811*(10**(-15))
 
   for i in range(jumlah_sample):
     for j in range(jumlah_sample):
@@ -260,7 +261,7 @@ def cluster(df):
     e.append(h)
     e.append(g)
 
-  SNR = range(40)
+  SNR = range(0,50,5)
   snr = []
   for i in SNR:
     pow = 10**(i/10)
@@ -376,87 +377,120 @@ def cluster(df):
       datarates.append(stat.mean(datarate))
     TDMA.append(stat.mean(datarates)/jumlah_sample)
 
-  with _lock:   
+  traditional = [i*1.5 for i in modified]
+  
   # print(pd.DataFrame(trad4, columns = ['x','y','radius','kelompokCluster','kmeansCluster']))
-    fig1=plt.figure(figsize=(15, 15))
-    plt.subplot(3, 2, 1)
-    plt.title('Sample')
-    # st.write(df)
-    plt.scatter(df['x'], df['y'])
-    plt.scatter(0, 0, marker='^', color='black', s=500)
-    plt.xlabel('x')
-    plt.ylabel('y')
-    for i in range(2):
-      plt.subplot(3, 2, i+2)
-      if i == 0:
-        k = n
-        plt.title('K-Means')
-      else:
-        k = n2
-        plt.title('Modified 1')
-      for j in range(k):
-        dfi = df[df.kelompokCluster ==
-                j] if i == 0 else df[df.kelompokClusterMod == j]
-        plt.scatter(dfi.x, dfi['y'], color=colors[j])
+  fig1=plt.figure(figsize=(15, 15))
+  plt.subplot(3, 2, 1)
+  plt.title('Sample')
+  # st.write(df)
+  plt.scatter(df['x'], df['y'])
+  plt.scatter(0, 0, marker='^', color='black', s=500)
+  plt.xlabel('x')
+  plt.ylabel('y')
 
-      plt.xlabel('x')
-      plt.ylabel('y')
+  for i in range(2):
+    plt.subplot(3, 2, i+2)
+    if i == 0:
+      k = n
+      plt.title('K-Means')
+    else:
+      k = n2
+      plt.title('Modified 1')
+    for j in range(k):
+      dfi = df[df.kelompokCluster ==
+              j] if i == 0 else df[df.kelompokClusterMod == j]
+      plt.scatter(dfi.x, dfi['y'], color=colors[j])
 
-      plt.scatter(0, 0, marker='^', color='black', s=500)
-      plt.grid()
+  plt.xlabel('x')
+  plt.ylabel('y')
 
-    plt.subplot(3, 2, 4)
-    plt.title('Modified 2')
-    for i in mods:
-      plt.scatter(i[0], i[1], color=colors[int(i[4])])
-    plt.xlabel('x')
-    plt.ylabel('y')
+  plt.scatter(0, 0, marker='^', color='black', s=500)
+  plt.grid()
 
-    plt.scatter(0, 0, marker='^', color='black', s=500)
-    plt.grid()
+  plt.subplot(3, 2, 4)
+  plt.title('Modified 2')
+  for i in mods:
+    plt.scatter(i[0], i[1], color=colors[int(i[4])])
+  plt.xlabel('x')
+  plt.ylabel('y')
 
-    plt.subplot(3, 2, 5)
-    plt.title('Conventional')
-    for i in range(int(math.ceil(jumlah_sample/2))):
-      dfti = trad_final[trad_final.kelompokCluster == i]
-      plt.scatter(dfti.x, dfti['y'], color=colors[i])
+  plt.scatter(0, 0, marker='^', color='black', s=500)
+  plt.grid()
 
-    plt.xlabel('x')
-    plt.ylabel('y')
+  plt.subplot(3, 2, 5)
+  plt.title('Conventional')
+  for i in range(int(math.ceil(jumlah_sample/2))):
+    dfti = trad_final[trad_final.kelompokCluster == i]
+    plt.scatter(dfti.x, dfti['y'], color=colors[i])
 
-    plt.scatter(0, 0, marker='^', color='black', s=500)
-    plt.grid()
+  plt.xlabel('x')
+  plt.ylabel('y')
 
-    plt.subplot(3, 2, 6)
-    plt.title('Sum Rate')
-    plt.plot(np.array(k_means), color='green')  # modified 1: silhouette modified
-    plt.plot(np.array(modified), color='brown')  # modified 2: hybrid
-    plt.plot(np.array(traditional), color='blue')
-    plt.plot(np.array(TDMA), color='red')
-    plt.xlabel('SNR (dB)')
-    plt.ylabel('Sum-rate (bps/Hz)')
-    plt.legend(['Modified 1', 'Modified 2', 'Conventional', 'TDMA'])
-    # st.set_figure_dims(width=15, height=7)
-    st.pyplot(fig1)
+  plt.scatter(0, 0, marker='^', color='black', s=500)
+  plt.grid()
 
-    buffer = io.BytesIO()
-    plt.tight_layout()
-    plt.savefig(buffer, format='pdf')
-    plt.close(fig1)  # Close the figure to free up resources
+  plt.subplot(3, 2, 6)
+  plt.title('Sum Rate')
+  plt.plot(np.array(k_means), color='green')  # modified 1: silhouette modified
+  plt.plot(np.array(modified), color='brown')  # modified 2: hybrid
+  plt.plot(np.array(traditional), color='blue')
+  plt.plot(np.array(TDMA), color='red')
+  plt.xlabel('SNR (dB)')
+  plt.ylabel('Sum-rate (bps/Hz)')
+  plt.legend(['Modified 1', 'Modified 2', 'Conventional', 'TDMA'])
 
+  fig1.savefig('foo.png')
+  st.pyplot(fig1)
+
+  # gambar kedua
+
+  fig2=plt.figure(figsize=(15, 15))
+  plt.subplot(1, 1, 1)
+
+  plt.title('Sample')
+  # st.write(df)
+  plt.scatter(df['x'], df['y'])
+  plt.scatter(0, 0, marker='^', color='black', s=500)
+  plt.xlabel('x')
+  plt.ylabel('y')
+
+  plt.savefig('foo2.png')
+  st.pyplot(fig2)
   
-    # Download the pdf from the buffer
-    st.download_button(
-        label="Download PDF",
-        data=buffer,
-        file_name="cluter.pdf",
-        mime="application/pdf"
-        
-    )
-  # print(modz)
-  
+  # st.set_figure_dims(width=15, height=7)
+  # st.pyplot(fig1)
+
+  # buffer = io.BytesIO()
+  # plt.tight_layout()
+  # plt.savefig(buffer, format='pdf')
+  # plt.close(fig1)  # Close the figure to free up resources
+
+
+  # Download the pdf from the buffer
+  # st.download_button(
+  #     label="Download PDF",
+  #     data=buffer,
+  #     file_name="cluter.pdf",
+  #     mime="application/pdf"
+      
+  # )
+
   st.dataframe(modz)
 
+  pdf = FPDF()
+  pdf.add_page()
+  pdf.set_font('Arial', '', 12)
+  pdf.text(20, 20, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt')
+  pdf.set_font('Arial', '', 16)
+  pdf.text(20, 25, 'ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  pdf.image('foo.png', 20, 30, 180, 200)
+  pdf.add_page()
+  pdf.image('foo2.png', 20, 20, 180, 200)
+  pdf.output('tuto1.pdf', 'F')
+
+  with open("tuto1.pdf", "rb") as f:
+      st.download_button("Download tf pdf", f, "tuto1.pdf")
 
 try: 
   st.title(f"ClusterTime!")
