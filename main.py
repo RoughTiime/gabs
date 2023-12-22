@@ -32,6 +32,7 @@ import base64
 from io import BytesIO
 import time
 from fpdf import FPDF
+import streamlit_ext as ste
 
 st.markdown("""
         <style>
@@ -188,10 +189,14 @@ def cluster(df):
     k.append(metrics.silhouette_score(df, labels, metric='euclidean'))
     k2.append(silhouette_score(df, labels, metric='euclidean'))
 
+  global score
   score = max(k)
+  global n
   n = k.index(score)+2
 
+  global score2
   score2 = max(k2)
+  global n2
   n2 = k2.index(score2)+2
 
   # @title
@@ -396,7 +401,7 @@ def cluster(df):
       plt.title('K-Means')
     else:
       k = n2
-      plt.title('Modified 1')
+      plt.title('Modified K-Means 1')
     for j in range(k):
       dfi = df[df.kelompokCluster ==
               j] if i == 0 else df[df.kelompokClusterMod == j]
@@ -409,7 +414,7 @@ def cluster(df):
     plt.grid()
 
   plt.subplot(3, 2, 4)
-  plt.title('Modified 2')
+  plt.title('Modified K-Means 2')
   for i in mods:
     plt.scatter(i[0], i[1], color=colors[int(i[4])])
   plt.xlabel('x')
@@ -419,7 +424,7 @@ def cluster(df):
   plt.grid()
 
   plt.subplot(3, 2, 5)
-  plt.title('Conventional')
+  plt.title('Near-Far Method')
   for i in range(int(math.ceil(jumlah_sample/2))):
     dfti = trad_final[trad_final.kelompokCluster == i]
     plt.scatter(dfti.x, dfti['y'], color=colors[i])
@@ -438,102 +443,182 @@ def cluster(df):
   plt.plot(np.array(TDMA), color='red')
   plt.xlabel('SNR (dB)')
   plt.ylabel('Sum-rate (bps/Hz)')
-  plt.legend(['Modified 1', 'Modified 2', 'Conventional', 'TDMA'])
+  plt.legend(['Modified K-Means 1', 'Modified K-Means 2', 'Near-Far Method', 'TDMA'])
 
   fig1.savefig('foo.png')
   st.pyplot(fig1)
 
-  # gambar kedua
+  with st.expander("See explanation"):
+      st.write("These information below shows the result after clustering process accomplished. ")
 
-  fig2=plt.figure(figsize=(8, 5))
-  plt.subplot(1, 1, 1)
+      # #tabel 
+      # co2.dataframe(modz) 
+      # co3.write(
+      #     "sdjhsjjdsjdsdsxnsjxnjjkkkkkkdejidjeidwjidiwdji"
+      # )
 
-  plt.title('Sample')
-  # st.write(df)
-  plt.scatter(df['x'], df['y'])
-  plt.scatter(0, 0, marker='^', color='black', s=500)
-  plt.xlabel('x')
-  plt.ylabel('y')
+      # gambar sample
+      a1, b2 = st.columns([1,1])
+      fig2=plt.figure(figsize=(8, 5))
+      plt.subplot(1, 1, 1)
 
-  plt.savefig('foo2.png')
-  st.pyplot(fig2)
+      plt.title('Sample')
+      # st.write(df)
+      plt.scatter(df['x'], df['y'])
+      plt.scatter(0, 0, marker='^', color='black', s=500)
+      plt.xlabel('x')
+      plt.ylabel('y')
 
-  fig3=plt.figure(figsize=(8,5))
-  plt.subplot(1, 1, 1)
-  plt.title('K-Means')
-  for j in range(k):
-    dfi = df[df.kelompokCluster == j]
-    plt.scatter(dfi.x, dfi['y'], color=colors[j])
-
-  plt.xlabel('x')
-  plt.ylabel('y')
-
-  plt.scatter(0, 0, marker='^', color='black', s=500)
-  plt.grid()
-
-  plt.savefig('foo3.png')
-  st.pyplot(fig3)
-
-  fig4=plt.figure(figsize=(8,5))
-  plt.subplot(1, 1, 1)
-  plt.title('Modified 1')
-  for j in range(k):
-    dfi = df[df.kelompokClusterMod == j]
-    plt.scatter(dfi.x, dfi['y'], color=colors[j])
-
-  plt.xlabel('x')
-  plt.ylabel('y')
-
-  plt.scatter(0, 0, marker='^', color='black', s=500)
-  plt.grid()
-
-  plt.savefig('foo4.png')
-  st.pyplot(fig4)
-  
-  # st.set_figure_dims(width=15, height=7)
-  # st.pyplot(fig1)
-
-  # buffer = io.BytesIO()
-  # plt.tight_layout()
-  # plt.savefig(buffer, format='pdf')
-  # plt.close(fig1)  # Close the figure to free up resources
-
-
-  # Download the pdf from the buffer
-  # st.download_button(
-  #     label="Download PDF",
-  #     data=buffer,
-  #     file_name="cluter.pdf",
-  #     mime="application/pdf"
+      plt.savefig('foo2.png')
+      a1.pyplot(fig2)
+      b2.write("")
+      b2.write("This Plot shows the position of users equipment represented as dots and base station represented as triangle.")
       
-  # )
+      #gambar kmeans biasa
+      fig3=plt.figure(figsize=(8,5))
+      plt.subplot(1, 1, 1)
+      plt.title('K-Means')
+      for j in range(k):
+        dfi = df[df.kelompokCluster == j]
+        plt.scatter(dfi.x, dfi['y'], color=colors[j])
 
-  st.dataframe(modz)
+      plt.xlabel('x')
+      plt.ylabel('y')
 
+      plt.scatter(0, 0, marker='^', color='black', s=500)
+      plt.grid()
+
+      plt.savefig('foo3.png')
+      a1, b2 = st.columns([1,1])
+      a1.pyplot(fig3)
+      b2.write("")
+      b2.write("This Plot shows Form of Clusters created using K-Means Clustering. In this process, we use Silhouette Score to set the value of K. The colors represented clusters formed, total cluster formed are:")
+      b2.write(n)
+
+      #gambar modified 1
+      fig4=plt.figure(figsize=(8,5))
+      plt.subplot(1, 1, 1)
+      plt.title('Modified K-Means 1')
+      for j in range(k):
+        dfi = df[df.kelompokClusterMod == j]
+        plt.scatter(dfi.x, dfi['y'], color=colors[j])
+
+      plt.xlabel('x')
+      plt.ylabel('y')
+
+      plt.scatter(0, 0, marker='^', color='black', s=500)
+      plt.grid()
+
+      plt.savefig('foo4.png')
+      a1, b2 = st.columns([1,1])
+      a1.pyplot(fig4)
+      b2.write("")
+      b2.write("This Plot shows Form of Clusters created using Modified K-Means Clustering. In this process, we use Optimum distance on Silhouette Score to set the value of K. The colors represented clusters formed, total cluster formed are:")
+      b2.write(n2)
+
+      #gambar modified 2
+      fig5=plt.figure(figsize=(8,5))
+      plt.subplot(1, 1, 1)
+      plt.title('Modified K-Means 2')
+      for i in mods:
+        plt.scatter(i[0], i[1], color=colors[int(i[4])])
+      plt.xlabel('x')
+      plt.ylabel('y')
+      plt.scatter(0, 0, marker='^', color='black', s=500)
+      plt.grid()
+      plt.savefig('foo5.png')
+      a1, b2 = st.columns([1,1])
+      a1.pyplot(fig5)
+      b2.write("")
+      b2.write("This Plot shows Form of Clusters created using Combination of K-Means Clustering and Near-Far Scheme. The colors represented clusters formed, total cluster formed are:")
+      b2.write(modz['modified_2'].max() + 1)
+
+      #gambar conventional
+      fig6=plt.figure(figsize=(8,5))
+      plt.subplot(1, 1, 1)
+      plt.title('Near-Far Method')
+      for i in range(int(math.ceil(jumlah_sample/2))):
+        dfti = trad_final[trad_final.kelompokCluster == i]
+        plt.scatter(dfti.x, dfti['y'], color=colors[i])
+
+      plt.xlabel('x')
+      plt.ylabel('y')
+
+      plt.scatter(0, 0, marker='^', color='black', s=500)
+      plt.grid()
+      plt.savefig('foo6.png')
+      a1, b2 = st.columns([1,1])
+      a1.pyplot(fig6)
+      b2.write("")
+      b2.write("This Plot shows Form of Clusters created using Near-Far Method. The nearest user to the base station will be paired with the furthest. The colors represented clusters formed, total cluster formed are:")
+      b2.write(modz['conventional'].max() + 1)
+
+      #gambar sumrate
+      fig7=plt.figure(figsize=(8,5))
+      plt.subplot(1, 1, 1)
+      plt.title('Sum Rate')
+      plt.plot(np.array(k_means), color='green')  # modified 1: silhouette modified
+      plt.plot(np.array(modified), color='brown')  # modified 2: hybrid
+      plt.plot(np.array(traditional), color='blue')
+      plt.plot(np.array(TDMA), color='red')
+      plt.xlabel('SNR (dB)')
+      plt.ylabel('Sum-rate (bps/Hz)')
+      plt.legend(['Modified K-Means 1', 'Modified K-Means 2', 'Near-Far Method', 'TDMA'])
+
+      fig7.savefig('foo7.png')
+      a1, b2 = st.columns([1,1])
+      a1.pyplot(fig7)
+      b2.write("")
+      b2.write("After some calculation, we obtained sume rate score for every clustering method, the best sum rate score goes to Modified K-Means 1, with improvement level .......% ")
+      
   pdf = FPDF()
   pdf.add_page()
-  pdf.set_font('Arial', '', 12)
-  pdf.text(20, 20, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt')
   pdf.set_font('Arial', '', 16)
-  pdf.text(20, 25, 'ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
-  pdf.image('foo.png', 20, 30, 180, 200)
+  pdf.text(80, 20, 'CLUSTER RESULT')
+  # pdf.set_font('Arial', '', 16)
+  # pdf.text(20, 25, 'ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  pdf.image('foo2.png', 15, 30, 90, 60)
+  pdf.set_font('Arial', '', 8)
+  pdf.text(100, 40, "This Plot shows the position of users equipment represented as dots and")
+  pdf.text(100, 45, "base station represented as triangle.")
+  pdf.image('foo3.png', 15, 100, 90, 60)
+  pdf.text(100, 110, "This Plot shows Form of Clusters created using K-Means Clustering.")
+  pdf.text(100, 115, "In this process, we use Silhouette Score to set the value of K. ")
+  pdf.text(100, 120, "The colors represented clusters formed, total cluster formed are:")
+  pdf.image('foo4.png', 15, 170, 90, 60)
+  pdf.text(100, 180, "This Plot shows Form of Clusters created using Modified K-Means Clustering.")
+  pdf.text(100, 185, "In this process, we use Optimum distance on Silhouette Score to set the value")
+  pdf.text(100, 190, "of K. The colors represented clusters formed, total cluster formed are:")
   pdf.add_page()
-  pdf.image('foo2.png', 20, 20, 180, 200)
-  pdf.output('tuto1.pdf', 'F')
+  pdf.image('foo5.png', 15, 30, 90, 60)
+  pdf.text(100, 40, "This Plot shows Form of Clusters created using Combination of K-Means")
+  pdf.text(100, 45, "Clustering and Near-Far Scheme. The colors represented clusters formed,") 
+  pdf.text(100, 50, "total cluster formed are:")
+  pdf.image('foo6.png', 15, 100, 90, 60)
+  pdf.text(100, 110, "This Plot shows Form of Clusters created using Near-Far Method. The nearest ")
+  pdf.text(100, 115, "user to the base station will be paired with the furthest. The colors" )
+  pdf.text(100, 120, "represented clusters formed, total cluster formed are:")
+  pdf.image('foo7.png', 15, 170, 90, 60)
+  pdf.text(100, 180, "After some calculation, we obtained sume rate score for every clustering") 
+  pdf.text(100, 185, "method, the best sum rate score goes to Modified K-Means 1, with") 
+  pdf.text(100, 190, "improvement level .......% ")
+  pdf.add_page()
+  pdf.image('foo.png', 15, 20, 180, 200)
+  pdf.output('Cluster.pdf', 'F')
 
-  with open("tuto1.pdf", "rb") as f:
-      st.download_button("Download tf pdf", f, "tuto1.pdf")
+  with open("Cluster.pdf", "rb") as f:
+      ste.download_button("Download Result", f, "Cluster.pdf")
 
 try: 
   st.title(f"ClusterTime!")
-  st.markdown('<p style="text-align: justify"; color:Black; font-size: 30px;">Its time to Cluster, we will help you clusterize your data or simply choose generate random to see how the program works. The purpose of the program is to clusterize users for NOMA scheme, we aim for the high sumrate score.</p>', unsafe_allow_html=True)
+  st.markdown('<p style="text-align: justify"; color:Black; font-size: 30px;">Its time to Cluster, we will help you clusterize your data or simply choose generate random to see how the program works. The purpose of the program is to clusterize users for NOMA scheme using modified K-Means Clustering, we aim for the high sumrate score.</p>', unsafe_allow_html=True)
   st.markdown('<p style="text-align: justify"; color:Black; font-size: 20px;">So, lets get started shall we?</p>', unsafe_allow_html=True)
 
   selected = option_menu(
       menu_title=None,
       # options=["Home","Generate Random","Upload CSV File","How to Use"],
-      options=["Home", "How to Use"],
-      icons=["house-fill","info-circle-fill"],
+      options=["Home", "How to Use","About"],
+      icons=["house-fill","question-octagon-fill","info-circle-fill"],
       default_index=0,
       orientation="horizontal",
       styles={
@@ -565,7 +650,6 @@ try:
    placeholder="Select method...",
 )
 
-    # with tab1:\
     if option == "Upload File" :
         st.header("Upload File")
         uploaded_file = st.file_uploader(label="Upload your CSV File", type='csv')
@@ -576,7 +660,6 @@ try:
 
          
 
-    # with tab2:
     if option == "Generate Random" :
         st.header("Random Generator")
         randoms = st.text_input("Generate Random, please insert the number of user: ")
@@ -641,6 +724,17 @@ try:
       st.text('3. Press enter and wait for the program to process.')
       st.text('4. Wait for the program to process.')
       
+  if selected == "About":
+     st.markdown("""
+        <style>
+               .block-container {
+                    padding-top: 0rem;
+                    padding-bottom: 0rem;
+                    padding-left: 0rem;
+                    padding-right: 0rem;
+                }
+        </style>
+        """, unsafe_allow_html=True)
 
   #hide humburger and watermark
   hide_streamlit_style = """
