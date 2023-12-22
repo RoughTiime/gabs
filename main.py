@@ -377,6 +377,21 @@ def cluster(df):
       datarates.append(stat.mean(datarate))
     TDMA.append(stat.mean(datarates)/jumlah_sample)
 
+  mod1_to_conv = []
+  mod1_to_mod2 = []
+  mod1_to_oma =  []
+  mod2_to_conv = []
+  mod2_to_oma = []
+  for i in range(5, 10, 2):
+    mod1_to_conv.append(k_means[i]/traditional[i])
+    mod1_to_mod2.append(k_means[i]/modified[i])
+    mod1_to_oma.append(k_means[i]/TDMA[i])
+    mod2_to_conv.append(modified[i]/traditional[i])
+    mod2_to_oma.append(modified[i]/TDMA[i])
+  
+  def average(lst): 
+    return sum(lst) / len(lst)
+  
   traditional = [i*1.5 for i in modified]
   
   # print(pd.DataFrame(trad4, columns = ['x','y','radius','kelompokCluster','kmeansCluster']))
@@ -508,6 +523,11 @@ def cluster(df):
       
   # )
 
+  st.write('sum-rate algoritma 1',round((average(mod1_to_mod2)-1)*100, 2), '% lebih tinggi dari algoritma 2')
+  st.write('sum-rate algoritma 1',round((average(mod1_to_conv)-1)*100, 2), '% lebih tinggi dari konvensional')
+  st.write('sum-rate algoritma 1',round((average(mod1_to_oma)-1)*100, 2), '% lebih tinggi dari sumrate OMA')
+  st.write('sum-rate algoritma 2',round((1-average(mod2_to_conv))*100, 2), '% lebih rendah dari konvensioanl')
+  st.write('sum-rate algoritma 2',round((average(mod2_to_oma)-1)*100, 2), '% lebih tinggi dari sumrate OMA')
   st.dataframe(modz)
 
   pdf = FPDF()
