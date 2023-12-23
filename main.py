@@ -327,7 +327,7 @@ def cluster(df):
       mods.append(e[1][:-2])
 
   modz = pd.DataFrame(mods, columns=[
-                      'x', 'y', 'distance', 'conventional', 'modified_2', 'modified_1'])
+                      'x', 'y', 'distance', 'Near-Far Method', 'modified_2', 'modified_1'])
 
   modified = []
 
@@ -466,12 +466,6 @@ def cluster(df):
   with st.expander("See explanation"):
       st.write("These information below shows the result after clustering process accomplished. ")
 
-      # #tabel 
-      # co2.dataframe(modz) 
-      # co3.write(
-      #     "sdjhsjjdsjdsdsxnsjxnjjkkkkkkdejidjeidwjidiwdji"
-      # )
-
       # gambar sample
       a1, b2 = st.columns([1,1])
       fig2=plt.figure(figsize=(8, 5))
@@ -566,9 +560,9 @@ def cluster(df):
       a1.pyplot(fig6)
       b2.write("")
       b2.write("This Plot shows Form of Clusters created using Near-Far Method. The nearest user to the base station will be paired with the furthest. The colors represented clusters formed, total cluster formed are:")
-      b2.write(modz['conventional'].max() + 1)
+      b2.write(modz['Near-Far Method'].max() + 1)
 
-      #gambar sumrate
+      # gambar sumrate
       fig7=plt.figure(figsize=(8,5))
       plt.subplot(1, 1, 1)
       plt.title('Sum Rate')
@@ -579,29 +573,26 @@ def cluster(df):
       plt.xlabel('SNR (dB)')
       plt.ylabel('Sum-rate (bps/Hz)')
       plt.legend(['Modified K-Means 1', 'Modified K-Means 2', 'Near-Far Method', 'TDMA'])
-
+      
       fig7.savefig('foo7.png')
+
       a1, b2 = st.columns([1,1])
       a1.pyplot(fig7)
       b2.write("")
-      b2.write("After some calculation, we obtained sume rate score for every clustering method, the best sum rate score goes to Modified K-Means 1, with improvement level .......% ")
+      b2.write("After some calculation, we obtained sume rate score for every clustering method, the best sum rate score goes to Modified K-Means 1. ")
       
-  # Download the pdf from the buffer
-  # st.download_button(
-  #     label="Download PDF",
-  #     data=buffer,
-  #     file_name="cluter.pdf",
-  #     mime="application/pdf"
-      
-  # )
+      #tabel 
+      a1, b2 = st.columns([2,1])
+      a1.dataframe(modz) 
+      b2.write("This table shows which cluster are the users in")
 
-  st.write('sum-rate algoritma 1',round((average(mod1_to_mod2)-1)*100, 2), '% lebih tinggi dari algoritma 2')
-  st.write('sum-rate algoritma 1',round((average(mod1_to_conv)-1)*100, 2), '% lebih tinggi dari konvensional')
-  st.write('sum-rate algoritma 1',round((average(mod1_to_oma)-1)*100, 2), '% lebih tinggi dari sumrate OMA')
-  st.write('sum-rate algoritma 2',round((1-average(mod2_to_conv))*100, 2), '% lebih rendah dari konvensioanl')
-  st.write('sum-rate algoritma 2',round((average(mod2_to_oma)-1)*100, 2), '% lebih tinggi dari sumrate OMA')
-  st.dataframe(modz)
-
+      #summary
+      st.write('Sum-rate Modified K-Means 1',round((average(mod1_to_mod2)-1)*100, 2), '% better than Modified K-Means 2')
+      st.write('Sum-rate Modified K-Means 1',round((average(mod1_to_conv)-1)*100, 2), '% better than Near-Far Method')
+      st.write('Sum-rate Modified K-Means 1',round((average(mod1_to_oma)-1)*100, 2), '% better than OMA')
+      st.write('Sum-rate Modified K-Means 2',round((1-average(mod2_to_conv))*100, 2), '% worse than Near-Far Method')
+      st.write('Sum-rate Modified K-Means 2',round((average(mod2_to_oma)-1)*100, 2), '% better than OMA')
+  
   pdf = FPDF()
   pdf.add_page()
   pdf.set_font('Arial', '', 16)
@@ -615,26 +606,38 @@ def cluster(df):
   pdf.image('foo3.png', 15, 100, 90, 60)
   pdf.text(100, 110, "This Plot shows Form of Clusters created using K-Means Clustering.")
   pdf.text(100, 115, "In this process, we use Silhouette Score to set the value of K. ")
-  pdf.text(100, 120, "The colors represented clusters formed, total cluster formed are:")
+  pdf.text(100, 120, "The colors represented clusters formed, total cluster formed are:{}".format(n))
   pdf.image('foo4.png', 15, 170, 90, 60)
   pdf.text(100, 180, "This Plot shows Form of Clusters created using Modified K-Means Clustering.")
   pdf.text(100, 185, "In this process, we use Optimum distance on Silhouette Score to set the value")
-  pdf.text(100, 190, "of K. The colors represented clusters formed, total cluster formed are:")
+  pdf.text(100, 190, "of K. The colors represented clusters formed, total cluster formed are:{}".format(n2))
   pdf.add_page()
   pdf.image('foo5.png', 15, 30, 90, 60)
   pdf.text(100, 40, "This Plot shows Form of Clusters created using Combination of K-Means")
   pdf.text(100, 45, "Clustering and Near-Far Scheme. The colors represented clusters formed,") 
-  pdf.text(100, 50, "total cluster formed are:")
+  pdf.text(100, 50, "total cluster formed are: {}".format(modz['modified_2'].max() + 1))
   pdf.image('foo6.png', 15, 100, 90, 60)
   pdf.text(100, 110, "This Plot shows Form of Clusters created using Near-Far Method. The nearest ")
   pdf.text(100, 115, "user to the base station will be paired with the furthest. The colors" )
-  pdf.text(100, 120, "represented clusters formed, total cluster formed are:")
+  pdf.text(100, 120, "represented clusters formed, total cluster formed are: {}".format(modz['Near-Far Method'].max() + 1))
   pdf.image('foo7.png', 15, 170, 90, 60)
   pdf.text(100, 180, "After some calculation, we obtained sume rate score for every clustering") 
   pdf.text(100, 185, "method, the best sum rate score goes to Modified K-Means 1, with") 
   pdf.text(100, 190, "improvement level .......% ")
   pdf.add_page()
   pdf.image('foo.png', 15, 20, 180, 200)
+  pdf.add_page()
+  pdf.set_font('Arial', '', 10)
+  pdf.text(10,10,"X")
+  pdf.text(35,0,"Y")
+  pdf.text(70,0,"Distance")
+  pdf.text(105,0,"Near-Far Method")
+  pdf.text(140,0,"Modified_2")
+  pdf.text(175,0,"Modified_1")
+  for index, row in modz.iterrows():
+    for data in row.values:
+        pdf.cell(35, 5, str(data))  # write each data for the row in its cell
+    pdf.ln()               
   pdf.output('Cluster.pdf', 'F')
 
   with open("Cluster.pdf", "rb") as f:
