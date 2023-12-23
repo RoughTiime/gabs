@@ -216,7 +216,7 @@ def cluster(df):
   trad4 = []  # formatted
 
   for e in trad:
-    radius = np.linalg.norm(np.array((e[0], e[1])))
+    radius = round(np.linalg.norm(np.array((e[0], e[1]))), 2)
     trad2.append([e[0], e[1], radius.item()])
   trad2.sort(key=based_on_radius)
 
@@ -539,10 +539,20 @@ def cluster(df):
   pdf.image('foo.png', 20, 30, 180, 200)
   pdf.add_page()
   pdf.image('foo2.png', 20, 20, 180, 200)
-  pdf.output('tuto1.pdf', 'F')
+  for index, row in modz.iterrows():
+    # print(row)
+    m = 0
+    for data in row.values:
+        if m > 2:
+          pdf.cell(35, 5, str(int(data)))
+        else:
+          pdf.cell(35, 5, str(data))
+        m = m + 1
+    pdf.ln() 
+  pdf.output('Cluster.pdf', 'F')
 
-  with open("tuto1.pdf", "rb") as f:
-      st.download_button("Download tf pdf", f, "tuto1.pdf")
+  with open("Cluster.pdf", "rb") as f:
+      st.download_button("Download tf pdf", f, "Cluster.pdf")
 
 try: 
   st.title(f"ClusterTime!")
@@ -613,7 +623,7 @@ try:
         if randoms:
                             jumlah_sample = int(randoms)
                             def rand():
-                                return(random.uniform(-10, 10))
+                                return(round(random.uniform(-10, 10), 2))
 
                             header = ['x', 'y']
                             data = []
