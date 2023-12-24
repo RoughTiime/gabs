@@ -221,7 +221,7 @@ def cluster(df):
   trad4 = []  # formatted
 
   for e in trad:
-    radius = np.linalg.norm(np.array((e[0], e[1])))
+    radius = round(np.linalg.norm(np.array((e[0], e[1]))), 2)
     trad2.append([e[0], e[1], radius.item()])
   trad2.sort(key=based_on_radius)
 
@@ -584,60 +584,87 @@ def cluster(df):
       #tabel 
       a1, b2 = st.columns([2,1])
       a1.dataframe(modz) 
-      b2.write("This table shows which cluster are the users in")
+      b2.write("This table shows which cluster are the users at, in every clustering method.")
 
+
+  with st.expander("Conclusion"):
       #summary
-      st.write('Sum-rate Modified K-Means 1',round((average(mod1_to_mod2)-1)*100, 2), '% better than Modified K-Means 2')
-      st.write('Sum-rate Modified K-Means 1',round((average(mod1_to_conv)-1)*100, 2), '% better than Near-Far Method')
-      st.write('Sum-rate Modified K-Means 1',round((average(mod1_to_oma)-1)*100, 2), '% better than OMA')
-      st.write('Sum-rate Modified K-Means 2',round((1-average(mod2_to_conv))*100, 2), '% worse than Near-Far Method')
-      st.write('Sum-rate Modified K-Means 2',round((average(mod2_to_oma)-1)*100, 2), '% better than OMA')
+      st.write('Modified K-Means 1 delivers a better sum-rate score by',round((average(mod1_to_mod2)-1)*100, 2), '% over Modified K-Means 2')
+      st.write('Modified K-Means 1 delivers a better sum-rate score by',round((average(mod1_to_conv)-1)*100, 2), '% over Near-Far Method')
+      st.write('Modified K-Means 1 delivers a better sum-rate score by',round((average(mod1_to_oma)-1)*100, 2), '% over OMA')
+      st.write('Modified K-Means 2 delivers a worse sum-rate score by',round((1-average(mod2_to_conv))*100, 2), '% over Near-Far Method')
+      st.write('Modified K-Means 2 delivers a better sum-rate score by',round((average(mod2_to_oma)-1)*100, 2), '% over OMA')
   
   pdf = FPDF()
   pdf.add_page()
-  pdf.set_font('Arial', '', 16)
-  pdf.text(80, 20, 'CLUSTER RESULT')
+  pdf.set_font('Times', '', 16)
+  pdf.text(85, 20, 'CLUSTER RESULT')
   # pdf.set_font('Arial', '', 16)
   # pdf.text(20, 25, 'ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
-  pdf.image('foo2.png', 15, 30, 90, 60)
-  pdf.set_font('Arial', '', 8)
-  pdf.text(100, 40, "This Plot shows the position of users equipment represented as dots and")
-  pdf.text(100, 45, "base station represented as triangle.")
-  pdf.image('foo3.png', 15, 100, 90, 60)
-  pdf.text(100, 110, "This Plot shows Form of Clusters created using K-Means Clustering.")
-  pdf.text(100, 115, "In this process, we use Silhouette Score to set the value of K. ")
-  pdf.text(100, 120, "The colors represented clusters formed, total cluster formed are:{}".format(n))
-  pdf.image('foo4.png', 15, 170, 90, 60)
-  pdf.text(100, 180, "This Plot shows Form of Clusters created using Modified K-Means Clustering.")
-  pdf.text(100, 185, "In this process, we use Optimum distance on Silhouette Score to set the value")
-  pdf.text(100, 190, "of K. The colors represented clusters formed, total cluster formed are:{}".format(n2))
+  pdf.image('foo2.png', 10, 30, 90, 60)
+  pdf.set_font('Times', '', 10)
+  pdf.text(95, 40, "This Plot shows the position of users equipment represented as dots and")
+  pdf.text(95, 45, "base station represented as triangle.")
+  pdf.image('foo3.png', 10, 90, 90, 60)
+  pdf.text(95, 100, "This Plot shows Form of Clusters created using K-Means Clustering.")
+  pdf.text(95, 105, "In this process, we use Silhouette Score to set the value of K. ")
+  pdf.text(95, 110, "The colors represented clusters formed, total cluster formed are {}.".format(n))
+  pdf.image('foo4.png', 10, 150, 90, 60)
+  pdf.text(95, 160, "This Plot shows Form of Clusters created using Modified K-Means ")
+  pdf.text(95, 165, "Clustering. In this process, we use Optimum distance on Silhouette ")
+  pdf.text(95, 170, "Score to set the value of K. The colors represented clusters formed,")
+  pdf.text(95, 175, "total cluster formed are {}.".format(n2))
+  pdf.image('foo5.png', 10, 210, 90, 60)
+  pdf.text(95, 220, "This Plot shows Form of Clusters created using Combination of K-Means")
+  pdf.text(95, 225, "Clustering and Near-Far Scheme. The colors represented clusters formed,") 
+  pdf.text(95, 230, "total cluster formed are {}.".format(modz['modified_2'].max() + 1))
   pdf.add_page()
-  pdf.image('foo5.png', 15, 30, 90, 60)
-  pdf.text(100, 40, "This Plot shows Form of Clusters created using Combination of K-Means")
-  pdf.text(100, 45, "Clustering and Near-Far Scheme. The colors represented clusters formed,") 
-  pdf.text(100, 50, "total cluster formed are: {}".format(modz['modified_2'].max() + 1))
-  pdf.image('foo6.png', 15, 100, 90, 60)
-  pdf.text(100, 110, "This Plot shows Form of Clusters created using Near-Far Method. The nearest ")
-  pdf.text(100, 115, "user to the base station will be paired with the furthest. The colors" )
-  pdf.text(100, 120, "represented clusters formed, total cluster formed are: {}".format(modz['Near-Far Method'].max() + 1))
-  pdf.image('foo7.png', 15, 170, 90, 60)
-  pdf.text(100, 180, "After some calculation, we obtained sume rate score for every clustering") 
-  pdf.text(100, 185, "method, the best sum rate score goes to Modified K-Means 1, with") 
-  pdf.text(100, 190, "improvement level .......% ")
+  pdf.image('foo6.png', 10, 15, 90, 60)
+  pdf.text(95, 25, "This Plot shows Form of Clusters created using Near-Far Method.")
+  pdf.text(95, 30, "The nearest user to the base station will be paired with the furthest. " )
+  pdf.text(95, 35, "The colors represented clusters formed, total cluster formed are {}.".format(modz['Near-Far Method'].max() + 1))
+  pdf.image('foo7.png', 10, 75, 90, 60)
+  pdf.text(95, 85, "After some calculation, we obtained sume rate score for every clustering") 
+  pdf.text(95, 90, "method, the best sum rate score goes to Modified K-Means 1.") 
+  pdf.set_font('Times', '', 8)
+  pdf.text(95, 100, 'Modified K-Means 1 delivers a better sum-rate score by {} % over Modified K-Means 2.'.format(round((average(mod1_to_mod2)-1)*100, 2)))
+  pdf.text(95, 105, 'Modified K-Means 1 delivers a better sum-rate score by {} % over Near-Far Method.'.format(round((average(mod1_to_conv)-1)*100, 2)))
+  pdf.text(95, 110, 'Modified K-Means 1 delivers a better sum-rate score by {} % over OMA.'.format(round((average(mod1_to_oma)-1)*100, 2)))
+  pdf.text(95, 115, 'Modified K-Means 2 delivers a worse sum-rate score by {} % over Near-Far Method.'.format(round((1-average(mod2_to_conv))*100, 2)))
+  pdf.text(95, 120, 'Modified K-Means 2 delivers a better sum-rate score by {} % over OMA.'.format(round((average(mod2_to_oma)-1)*100, 2)))
+  #Modified K-Means 1 delivers a better sum-rate score by {} % over Modified K-Means 2
+  
   pdf.add_page()
-  pdf.image('foo.png', 15, 20, 180, 200)
+  pdf.set_font('Times', '', 16)
+  pdf.text(77, 20, 'SIDE-BY-SIDE GRAPH')
+  pdf.image('foo.png', 15, 21, 180, 200)
   pdf.add_page()
-  pdf.set_font('Arial', '', 10)
-  pdf.text(10,10,"X")
-  pdf.text(35,0,"Y")
-  pdf.text(70,0,"Distance")
-  pdf.text(105,0,"Near-Far Method")
-  pdf.text(140,0,"Modified_2")
-  pdf.text(175,0,"Modified_1")
+  pdf.set_font('Times', '', 16)
+  pdf.text(70, 18, 'CLUSTER MAPPING TABLE')
+  pdf.set_font('Times', '', 11)
+  pdf.text(45,25, "This information shows which cluster are the users at, in every clustering method.")
+  pdf.set_font('Times', '', 10)
+  pdf.text(53,35,"X")
+  pdf.text(73,35,"Y")
+  pdf.text(88,35,"Distance")
+  pdf.text(107,35,"Near-Far")
+  pdf.text(125,35,"Modified 2")
+  pdf.text(147,35,"Modified 1")
+  y = 43
   for index, row in modz.iterrows():
+    # print(row)
+    m = 0
+    x = 52
+    
     for data in row.values:
-        pdf.cell(35, 5, str(data))  # write each data for the row in its cell
-    pdf.ln()               
+        if m > 2:
+          pdf.text(x, y, str(int(data)))
+        else:
+          pdf.text(x, y, str(data))
+        m = m + 1
+        x = x + 20
+    pdf.ln() 
+    y = y + 5
   pdf.output('Cluster.pdf', 'F')
 
   with open("Cluster.pdf", "rb") as f:
@@ -710,7 +737,7 @@ try:
         if randoms:
                             jumlah_sample = int(randoms)
                             def rand():
-                                return(random.uniform(-10, 10))
+                                return(round(random.uniform(-10, 10), 2))
 
                             header = ['x', 'y']
                             data = []
@@ -769,6 +796,71 @@ try:
                 }
         </style>
         """, unsafe_allow_html=True)
+     st.subheader('Introduction')
+     video_file = open('myvideo.mp4', 'rb')
+     video_bytes = video_file.read()
+     st.video(video_bytes)
+     st.subheader('ClusterTime operate as tool/media to observe performance of modified k-means clustering in Non-Orthogonal Multiple Access (NOMA) schemes in increasing sum-rate score and compare it to several clustering method.')
+     st.subheader('')
+     st.write('The first method is K-Means Clustering, to determine the number of K, we use Silhouette Coefficient for evalluating the quality of the resulting clusters. Silhouette score for each data point can be calculated with the following formula: ')
+     st.latex(r'''
+              S(i) = \frac{b(i)-a(i)}{max(a(i),b(i))}
+              ''')
+     st.write('Where:')
+     st.write('S(i) is the silhouette score for the i data point')
+     st.write('a(i) is the distance from the data point to other data points in the same cluster')
+     st.write('b(i) is the lowest distance from the data point to other data in another cluster')
+     st.write('')
+     st.write('The silhouette score for the entire dataset is the average of all existing data silhouette scores.')
+     st.latex(r'''
+              S=\frac{1}{N}\sum_{i=1}^{N}S(i)
+              ''')
+     st.write('Where:')
+     st.latex(r'''
+              N\;is\;the\;number\;of\;data\;points
+              ''')
+     st.write('However, apart from using the silhouette method from the scikit-learn python module, we also made a modifications where the values a(i) and b(i) were originally average values, here we use the optimum value. In other words, the maximum value of a(i) or intra-cluster distance will be taken. Meanwhile, for the b(i) value or inter-cluster distance, the minimum value will be used. This is because we wants to use an approach by taking the worst-case value.')
+     st.write('So it will guarantee better intra-cluster density and inter-cluster gap, as can be seen in the modified formula below.')
+     st.latex(r'''
+              S(i) =\frac{max(b(i))-min(a(i))}{max{min(a(i)),max(b(i))}}
+              ''')
+              
+     st.write('Where:')
+     st.write('S(i) is the silhouette score for the i data point')
+     st.write('a(i) is the distance from the ith data point to other data points in the same cluster')
+     st.write('b(i) is the lowest distance from the ith data point to other data in another cluster')
+     st.write('The silhouette score for the entire dataset is the average of all existing data silhouette scores.')
+     st.latex(r'''
+              S=\frac{1}{N}\sum_{i=1}^{N}S(i)
+              ''')
+     st.write('Where:')
+     st.latex(r'''
+              N\;is\;the\;number\;of\;data\;points
+              ''')
+    #  st.write('After the k value or number of clusters has been determined, k-means model will be created using the following algorithm.')
+    #  s1,s2,s3 = st.columns([1,4,1])
+    #  s2.text('input:')
+    #  s2.text('D = {d1,d2,....,dn} // data set')
+    #  s2.text('k // number of clusters')
+    #  s2.text('output:')
+    #  s2.text('a collection of k clusters')
+    #  s2.text('Step:')
+    #  s2.text('1. Initialize k centroids randomly')
+    #  s2.text('2. Repeat')
+    #  s2.text('')
+    #  s2.text('')
+    #  s2.text('')
+     st.write('We also use the near-far pairing. After the cluster and pairing are formed, the sum-rate score for each method will be calculated. Using the Rayleigh channel model, the datarate is calculated with the following equation: ')
+     st.latex(r'''
+              R_{i} = log_{2}\left ( 1+\frac{a_{i}P\left|h_{1}^{2} \right|}{(a_{i} + \cdots +a_{k})P\left| h_{1}^{2}\right|+\sigma ^{2}} \right )
+              ''')
+     st.write("")
+     st.write('After being calculated, the program will compare the sum-rate score of all the clustering method.')
+     
+
+     
+
+    
 
   #hide humburger and watermark
   hide_streamlit_style = """

@@ -1,0 +1,14 @@
+hydralit-components
+matplotlib
+numpy
+pandas
+plotly-express
+scikit-learn
+scipy
+seaborn
+streamlit
+streamlit-elements
+streamlit-option-menu
+streamlit_ext
+fpdf
+Pillow
