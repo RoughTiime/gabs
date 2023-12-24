@@ -387,7 +387,7 @@ def cluster(df):
   mod1_to_oma =  []
   mod2_to_conv = []
   mod2_to_oma = []
-  for i in range(5, 10, 2):
+  for i in range(7, 10, 1):
     mod1_to_conv.append(k_means[i]/traditional[i])
     mod1_to_mod2.append(k_means[i]/modified[i])
     mod1_to_oma.append(k_means[i]/TDMA[i])
