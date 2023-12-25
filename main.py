@@ -599,8 +599,6 @@ def cluster(df):
   pdf.add_page()
   pdf.set_font('Times', '', 16)
   pdf.text(85, 20, 'CLUSTER RESULT')
-  # pdf.set_font('Arial', '', 16)
-  # pdf.text(20, 25, 'ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
   pdf.image('foo2.png', 10, 30, 90, 60)
   pdf.set_font('Times', '', 10)
   pdf.text(95, 40, "This Plot shows the position of users equipment represented as dots and")
@@ -713,7 +711,8 @@ try:
 
     if option == "Upload File" :
         st.header("Upload File")
-        uploaded_file = st.file_uploader(label="Upload your CSV File", type='csv')
+        uploaded_file = st.file_uploader(label="Upload your CSV File (example : bit.ly/csvfileclustertime)", type='csv')
+        
                   
         if uploaded_file is not None:
           df = pd.read_csv(uploaded_file) 
@@ -768,10 +767,11 @@ try:
         </style>
         """, unsafe_allow_html=True)
       st.info('This information shows you how to use this program.')
-      st.markdown("""<style>[data-testid=column]:nth-of-type(1) [data-testid=stVerticalBlock]{gap: 0rem;}</style>""",unsafe_allow_html=True)
+      # st.markdown("""<style>[data-testid=column]:nth-of-type(1) [data-testid=stVerticalBlock]{gap: 0rem;}</style>""",unsafe_allow_html=True)
       st.markdown('<p style="text-align: justify"; color:Black; font-size: 20px;">First, there are two ways to use this program. You could choose to upload a CSV file that containing X and Y value as the user position, or you could just click generate random to see how the program work.</p>',unsafe_allow_html=True)
       st.info('If you choose to upload, please follow the instruction below.')
       st.image(Image.open('111.png'))
+      st.link_button("Go to gallery", "https://streamlit.io/gallery")
       st.text('1. Choose "Upload File" on selectbox,')
       st.text('2. Click "browse file" or drag and drop your file to the area,')
       st.text('3. Choose your CSV file,')
@@ -797,7 +797,7 @@ try:
         </style>
         """, unsafe_allow_html=True)
      st.subheader('Introduction')
-     video_file = open('myvideo.mp4', 'rb')
+     video_file = open('5G.mp4', 'rb')
      video_bytes = video_file.read()
      st.video(video_bytes)
      st.subheader('ClusterTime operate as tool/media to observe performance of modified k-means clustering in Non-Orthogonal Multiple Access (NOMA) schemes in increasing sum-rate score and compare it to several clustering method.')
@@ -837,19 +837,7 @@ try:
      st.latex(r'''
               N\;is\;the\;number\;of\;data\;points
               ''')
-    #  st.write('After the k value or number of clusters has been determined, k-means model will be created using the following algorithm.')
-    #  s1,s2,s3 = st.columns([1,4,1])
-    #  s2.text('input:')
-    #  s2.text('D = {d1,d2,....,dn} // data set')
-    #  s2.text('k // number of clusters')
-    #  s2.text('output:')
-    #  s2.text('a collection of k clusters')
-    #  s2.text('Step:')
-    #  s2.text('1. Initialize k centroids randomly')
-    #  s2.text('2. Repeat')
-    #  s2.text('')
-    #  s2.text('')
-    #  s2.text('')
+     
      st.write('We also use the near-far pairing. After the cluster and pairing are formed, the sum-rate score for each method will be calculated. Using the Rayleigh channel model, the datarate is calculated with the following equation: ')
      st.latex(r'''
               R_{i} = log_{2}\left ( 1+\frac{a_{i}P\left|h_{1}^{2} \right|}{(a_{i} + \cdots +a_{k})P\left| h_{1}^{2}\right|+\sigma ^{2}} \right )
@@ -857,11 +845,6 @@ try:
      st.write("")
      st.write('After being calculated, the program will compare the sum-rate score of all the clustering method.')
      
-
-     
-
-    
-
   #hide humburger and watermark
   hide_streamlit_style = """
               <style>
