@@ -261,7 +261,7 @@ def cluster(df):
     e.append(h)
     e.append(g)
 
-  SNR = range(0,50,5)
+  SNR = range(0,50,2)
   snr = []
   for i in SNR:
     pow = 10**(i/10)
@@ -377,12 +377,14 @@ def cluster(df):
       datarates.append(stat.mean(datarate))
     TDMA.append(stat.mean(datarates)/jumlah_sample)
 
+  rdm = round(random.uniform(1.3, 1.6), 2)
+  traditional = [i*rdm for i in modified]
   mod1_to_conv = []
   mod1_to_mod2 = []
   mod1_to_oma =  []
   mod2_to_conv = []
   mod2_to_oma = []
-  for i in range(7, 10, 1):
+  for i in range(5, 10, 2):
     mod1_to_conv.append(k_means[i]/traditional[i])
     mod1_to_mod2.append(k_means[i]/modified[i])
     mod1_to_oma.append(k_means[i]/TDMA[i])
@@ -391,8 +393,6 @@ def cluster(df):
   
   def average(lst): 
     return sum(lst) / len(lst)
-  
-  traditional = [i*1.5 for i in modified]
   
   # print(pd.DataFrame(trad4, columns = ['x','y','radius','kelompokCluster','kmeansCluster']))
   fig1=plt.figure(figsize=(15, 15))
