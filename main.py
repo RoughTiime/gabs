@@ -183,7 +183,7 @@ def cluster(df):
     colors.append(hexadecimal)
   k = []
   k2 = []
-  for i in range(2, jumlah_sample):
+  for i in range(2, 10):
     kmeans_model = KMeans(n_clusters=i).fit(df)
     labels = kmeans_model.labels_
     k.append(metrics.silhouette_score(df, labels, metric='euclidean'))
@@ -675,9 +675,8 @@ try:
 
   selected = option_menu(
       menu_title=None,
-      # options=["Home","Generate Random","Upload CSV File","How to Use"],
-      options=["Home", "How to Use","About"],
-      icons=["house-fill","question-octagon-fill","info-circle-fill"],
+      options=["About", "How to Use","Try Now!"],
+      icons=["info-circle-fill","question-octagon-fill","play-circle-fill"],
       default_index=0,
       orientation="horizontal",
       styles={
@@ -688,7 +687,7 @@ try:
       }
   )
 
-  if selected == "Home":
+  if selected == "Try Now!":
     st.markdown("""
         <style>
                .block-container {
