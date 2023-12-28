@@ -242,7 +242,7 @@ def cluster(df):
   trad_final = pd.DataFrame(
       trad4, columns=['x', 'y', 'radius', 'kelompokCluster'])
   eta = 4
-  N = 5
+  N = 3
   o = 0.1
   # o = 3.9811*(10**(-15))
 
@@ -266,7 +266,7 @@ def cluster(df):
     e.append(h)
     e.append(g)
 
-  SNR = range(0,50,2)
+  SNR = range(0,50,5)
   snr = []
   for i in SNR:
     pow = 10**(i/10)
@@ -389,7 +389,8 @@ def cluster(df):
   mod1_to_oma =  []
   mod2_to_conv = []
   mod2_to_oma = []
-  for i in range(5, 10, 2):
+  for i in range(2):
+    i = -(i+1)
     mod1_to_conv.append(k_means[i]/traditional[i])
     mod1_to_mod2.append(k_means[i]/modified[i])
     mod1_to_oma.append(k_means[i]/TDMA[i])
@@ -595,78 +596,81 @@ def cluster(df):
       st.write('Modified K-Means 2 delivers a worse sum-rate score by',round((1-average(mod2_to_conv))*100, 2), '% over Near-Far Method')
       st.write('Modified K-Means 2 delivers a better sum-rate score by',round((average(mod2_to_oma)-1)*100, 2), '% over OMA')
   
-  pdf = FPDF()
-  pdf.add_page()
-  pdf.set_font('Times', '', 16)
-  pdf.text(85, 20, 'CLUSTER RESULT')
-  pdf.image('foo2.png', 10, 30, 90, 60)
-  pdf.set_font('Times', '', 10)
-  pdf.text(95, 40, "This Plot shows the position of users equipment represented as dots and")
-  pdf.text(95, 45, "base station represented as triangle.")
-  pdf.image('foo3.png', 10, 90, 90, 60)
-  pdf.text(95, 100, "This Plot shows Form of Clusters created using K-Means Clustering.")
-  pdf.text(95, 105, "In this process, we use Silhouette Score to set the value of K. ")
-  pdf.text(95, 110, "The colors represented clusters formed, total cluster formed are {}.".format(n))
-  pdf.image('foo4.png', 10, 150, 90, 60)
-  pdf.text(95, 160, "This Plot shows Form of Clusters created using Modified K-Means ")
-  pdf.text(95, 165, "Clustering. In this process, we use Optimum distance on Silhouette ")
-  pdf.text(95, 170, "Score to set the value of K. The colors represented clusters formed,")
-  pdf.text(95, 175, "total cluster formed are {}.".format(n2))
-  pdf.image('foo5.png', 10, 210, 90, 60)
-  pdf.text(95, 220, "This Plot shows Form of Clusters created using Combination of K-Means")
-  pdf.text(95, 225, "Clustering and Near-Far Scheme. The colors represented clusters formed,") 
-  pdf.text(95, 230, "total cluster formed are {}.".format(modz['modified_2'].max() + 1))
-  pdf.add_page()
-  pdf.image('foo6.png', 10, 15, 90, 60)
-  pdf.text(95, 25, "This Plot shows Form of Clusters created using Near-Far Method.")
-  pdf.text(95, 30, "The nearest user to the base station will be paired with the furthest. " )
-  pdf.text(95, 35, "The colors represented clusters formed, total cluster formed are {}.".format(modz['Near-Far Method'].max() + 1))
-  pdf.image('foo7.png', 10, 75, 90, 60)
-  pdf.text(95, 85, "After some calculation, we obtained sume rate score for every clustering") 
-  pdf.text(95, 90, "method, the best sum rate score goes to Modified K-Means 1.") 
-  pdf.set_font('Times', '', 8)
-  pdf.text(95, 100, 'Modified K-Means 1 delivers a better sum-rate score by {} % over Modified K-Means 2.'.format(round((average(mod1_to_mod2)-1)*100, 2)))
-  pdf.text(95, 105, 'Modified K-Means 1 delivers a better sum-rate score by {} % over Near-Far Method.'.format(round((average(mod1_to_conv)-1)*100, 2)))
-  pdf.text(95, 110, 'Modified K-Means 1 delivers a better sum-rate score by {} % over OMA.'.format(round((average(mod1_to_oma)-1)*100, 2)))
-  pdf.text(95, 115, 'Modified K-Means 2 delivers a worse sum-rate score by {} % over Near-Far Method.'.format(round((1-average(mod2_to_conv))*100, 2)))
-  pdf.text(95, 120, 'Modified K-Means 2 delivers a better sum-rate score by {} % over OMA.'.format(round((average(mod2_to_oma)-1)*100, 2)))
-  #Modified K-Means 1 delivers a better sum-rate score by {} % over Modified K-Means 2
-  
-  pdf.add_page()
-  pdf.set_font('Times', '', 16)
-  pdf.text(77, 20, 'SIDE-BY-SIDE GRAPH')
-  pdf.image('foo.png', 15, 21, 180, 200)
-  pdf.add_page()
-  pdf.set_font('Times', '', 16)
-  pdf.text(70, 18, 'CLUSTER MAPPING TABLE')
-  pdf.set_font('Times', '', 11)
-  pdf.text(45,25, "This information shows which cluster are the users at, in every clustering method.")
-  pdf.set_font('Times', '', 10)
-  pdf.text(53,35,"X")
-  pdf.text(73,35,"Y")
-  pdf.text(88,35,"Distance")
-  pdf.text(107,35,"Near-Far")
-  pdf.text(125,35,"Modified 2")
-  pdf.text(147,35,"Modified 1")
-  y = 43
-  for index, row in modz.iterrows():
-    # print(row)
-    m = 0
-    x = 52
+  generate_pdf = st.button("Generate PDF")
+  if generate_pdf :
+    st.write('generate pdf succeed')
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font('Times', '', 16)
+    pdf.text(85, 20, 'CLUSTER RESULT')
+    pdf.image('foo2.png', 10, 30, 90, 60)
+    pdf.set_font('Times', '', 10)
+    pdf.text(95, 40, "This Plot shows the position of users equipment represented as dots and")
+    pdf.text(95, 45, "base station represented as triangle.")
+    pdf.image('foo3.png', 10, 90, 90, 60)
+    pdf.text(95, 100, "This Plot shows Form of Clusters created using K-Means Clustering.")
+    pdf.text(95, 105, "In this process, we use Silhouette Score to set the value of K. ")
+    pdf.text(95, 110, "The colors represented clusters formed, total cluster formed are {}.".format(n))
+    pdf.image('foo4.png', 10, 150, 90, 60)
+    pdf.text(95, 160, "This Plot shows Form of Clusters created using Modified K-Means ")
+    pdf.text(95, 165, "Clustering. In this process, we use Optimum distance on Silhouette ")
+    pdf.text(95, 170, "Score to set the value of K. The colors represented clusters formed,")
+    pdf.text(95, 175, "total cluster formed are {}.".format(n2))
+    pdf.image('foo5.png', 10, 210, 90, 60)
+    pdf.text(95, 220, "This Plot shows Form of Clusters created using Combination of K-Means")
+    pdf.text(95, 225, "Clustering and Near-Far Scheme. The colors represented clusters formed,") 
+    pdf.text(95, 230, "total cluster formed are {}.".format(modz['modified_2'].max() + 1))
+    pdf.add_page()
+    pdf.image('foo6.png', 10, 15, 90, 60)
+    pdf.text(95, 25, "This Plot shows Form of Clusters created using Near-Far Method.")
+    pdf.text(95, 30, "The nearest user to the base station will be paired with the furthest. " )
+    pdf.text(95, 35, "The colors represented clusters formed, total cluster formed are {}.".format(modz['Near-Far Method'].max() + 1))
+    pdf.image('foo7.png', 10, 75, 90, 60)
+    pdf.text(95, 85, "After some calculation, we obtained sume rate score for every clustering") 
+    pdf.text(95, 90, "method, the best sum rate score goes to Modified K-Means 1.") 
+    pdf.set_font('Times', '', 8)
+    pdf.text(95, 100, 'Modified K-Means 1 delivers a better sum-rate score by {} % over Modified K-Means 2.'.format(round((average(mod1_to_mod2)-1)*100, 2)))
+    pdf.text(95, 105, 'Modified K-Means 1 delivers a better sum-rate score by {} % over Near-Far Method.'.format(round((average(mod1_to_conv)-1)*100, 2)))
+    pdf.text(95, 110, 'Modified K-Means 1 delivers a better sum-rate score by {} % over OMA.'.format(round((average(mod1_to_oma)-1)*100, 2)))
+    pdf.text(95, 115, 'Modified K-Means 2 delivers a worse sum-rate score by {} % over Near-Far Method.'.format(round((1-average(mod2_to_conv))*100, 2)))
+    pdf.text(95, 120, 'Modified K-Means 2 delivers a better sum-rate score by {} % over OMA.'.format(round((average(mod2_to_oma)-1)*100, 2)))
+    #Modified K-Means 1 delivers a better sum-rate score by {} % over Modified K-Means 2
     
-    for data in row.values:
-        if m > 2:
-          pdf.text(x, y, str(int(data)))
-        else:
-          pdf.text(x, y, str(data))
-        m = m + 1
-        x = x + 20
-    pdf.ln() 
-    y = y + 5
-  pdf.output('Cluster.pdf', 'F')
+    pdf.add_page()
+    pdf.set_font('Times', '', 16)
+    pdf.text(77, 20, 'SIDE-BY-SIDE GRAPH')
+    pdf.image('foo.png', 15, 21, 180, 200)
+    pdf.add_page()
+    pdf.set_font('Times', '', 16)
+    pdf.text(70, 18, 'CLUSTER MAPPING TABLE')
+    pdf.set_font('Times', '', 11)
+    pdf.text(45,25, "This information shows which cluster are the users at, in every clustering method.")
+    pdf.set_font('Times', '', 10)
+    pdf.text(53,35,"X")
+    pdf.text(73,35,"Y")
+    pdf.text(88,35,"Distance")
+    pdf.text(107,35,"Near-Far")
+    pdf.text(125,35,"Modified 2")
+    pdf.text(147,35,"Modified 1")
+    y = 43
+    for index, row in modz.iterrows():
+      # print(row)
+      m = 0
+      x = 52
+      
+      for data in row.values:
+          if m > 2:
+            pdf.text(x, y, str(int(data)))
+          else:
+            pdf.text(x, y, str(data))
+          m = m + 1
+          x = x + 20
+      pdf.ln() 
+      y = y + 5
+    pdf.output('Cluster.pdf', 'F')
 
-  with open("Cluster.pdf", "rb") as f:
-      ste.download_button("Download Result", f, "Cluster.pdf")
+    with open("Cluster.pdf", "rb") as f:
+        ste.download_button("Download Result", f, "Cluster.pdf")
 
 try: 
   st.title(f"ClusterTime!")
