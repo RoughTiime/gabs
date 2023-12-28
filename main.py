@@ -183,7 +183,8 @@ def cluster(df):
     colors.append(hexadecimal)
   k = []
   k2 = []
-  for i in range(2, 10):
+  max_cluster = 10 if jumlah_sample > 10 else jumlah_sample
+  for i in range(2, max_cluster):
     kmeans_model = KMeans(n_clusters=i).fit(df)
     labels = kmeans_model.labels_
     k.append(metrics.silhouette_score(df, labels, metric='euclidean'))
