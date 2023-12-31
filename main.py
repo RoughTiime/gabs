@@ -740,7 +740,7 @@ try:
         if randoms:
                             jumlah_sample = int(randoms)
                             def rand():
-                                return(round(random.uniform(-10, 10), 2))
+                                return(round(random.gauss(0, 5), 2))
 
                             header = ['x', 'y']
                             data = []
