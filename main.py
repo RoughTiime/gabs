@@ -216,6 +216,37 @@ def cluster(df):
   z_predicted = km2.fit_predict(df)
 
   df['kelompokClusterMod'] = z_predicted
+  # betweenss / totalss
+  x = km.cluster_centers_
+  totalss = 0
+  for i in range(len(x)-1):
+      for j in range(i + 1, len(x)):
+          totalss = totalss + (x[j][1]-x[i][1])**2 + (x[j][0]-x[i][0])**2
+  global accuracy
+  accuracy = totalss/(km.inertia_ + totalss)
+
+  x2 = km2.cluster_centers_
+  totalss2 = 0
+  for i in range(len(x2)-1):
+      for j in range(i + 1, len(x2)):
+          totalss2 = totalss2 + (x2[j][1]-x2[i][1])**2 + (x2[j][0]-x2[i][0])**2
+  global accuracy2
+  accuracy2 = totalss2/(km2.inertia_ + totalss2)
+  #calinski harabasz
+  labels = km.labels_
+  global calbaz
+  calbaz = metrics.calinski_harabasz_score(df, labels)
+
+  labels2 = km2.labels_
+  global calbaz2
+  calbaz2 = metrics.calinski_harabasz_score(df, labels2)
+
+  global dadin
+  dadin = metrics.davies_bouldin_score(df, labels)
+
+  global dadin2
+  dadin2 = metrics.davies_bouldin_score(df, labels2)
+
   trad = raw
   trad2 = []  # add radius + sorted
   trad3 = []  # paired
@@ -589,6 +620,11 @@ def cluster(df):
       b2.write("This table shows which cluster are the users at, in every clustering method.")
 
 
+  lst = [[str(round((accuracy*100),2))+'%', str(round((accuracy2*100),2))+'%'], [round(dadin, 4), round(dadin2, 4)],
+       [round(calbaz, 4), round(calbaz2, 4)]]
+  st.dataframe(
+     pd.DataFrame(lst, index = ['Accuracy', 'Davis-Bouldin index', 'Calinski-Harabasz index'],columns =['Near-far Kmeans','Modified-silhouette Kmeans'])
+  )
   with st.expander("Conclusion"):
       #summary
       st.write('Modified K-Means 1 delivers a better sum-rate score by',round((average(mod1_to_mod2)-1)*100, 2), '% over Modified K-Means 2')
@@ -739,7 +775,7 @@ try:
         if randoms:
                             jumlah_sample = int(randoms)
                             def rand():
-                                return(round(random.uniform(-10, 10), 2))
+                                return(round(random.gauss(0, 5), 2))
 
                             header = ['x', 'y']
                             data = []
