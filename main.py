@@ -597,8 +597,8 @@ def cluster(df):
       st.write('Modified K-Means 2 delivers a worse sum-rate score by',round((1-average(mod2_to_conv))*100, 2), '% over Near-Far Method')
       st.write('Modified K-Means 2 delivers a better sum-rate score by',round((average(mod2_to_oma)-1)*100, 2), '% over OMA')
   
-  generate_pdf = ste.button("Generate File")
-  if generate_pdf :
+  # generate_pdf = st.button("Generate File")
+  if ste.button("Generate PDF"):
     st.write('generate pdf succeed')
     pdf = FPDF()
     pdf.add_page()
